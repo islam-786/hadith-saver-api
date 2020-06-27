@@ -19,43 +19,75 @@ app.post("/test", (req, res) => {
   res.status(200).json(backResponse);
 });
 
+/////////// Schema //////////////
+// {
+//   advanceNumbering: "123-a",
+//   main: {
+//     internationalNumbering: "123-ab",
+//     numberInBook: 12,
+//     bookNumber: 1,
+//     chapterNumber: 2,
+//     bookName: "name arabic",
+//     chapterName: "chapter name arabic",
+//     narratedBy: "narrated by arabic",
+//     narratedByDetail: "narrated by detail",
+//     arabic: "arabic text",
+//     linkedHadiths: ['hadith-1', 'hadith-2'] // optional
+//     linkedAyahs: ['ayah-1', 'ayah-2'] // optional
+//     relatedHadiths: ['hadith-1', 'hadith-2'] // optional
+//     tags: ['tag-1', 'tag-2'] // optional
+//   },
+//   english: {
+//     bookName: "book name",
+//     chapterName: "chapter name",
+//     narratedBy: "narated",
+//     text: "text in english"
+//   },
+//   urdu: {
+//     bookName: "book name",
+//     chapterName: "chapter name",
+//     narratedBy: "narated",
+//     narratedByDetail: "narrated by detail",
+//     text: "text in urdu"
+//   }
+// }
+
 app.post("/hadith", async (req, res) => {
   const advance_numbering = req.body.advanceNumbering;
-  const data = {
-    international_numbering: req.body.internationalNumbering,
-    number_in_book: req.body.numberInBook,
-    book_number: req.body.bookNumber,
-    chapter_number: req.body.chapterNumber,
-    book_name: req.body.book_name,
-    chapter_name: req.body.chapter_name,
-    narrated_by: req.body.narratedBy,
-    narrated_by_detail: req.body.narratedByDetail,
-    arabic: req.body.arabic,
+  const main = req.body.main;
+  const mainData = {
+    international_numbering: main.internationalNumbering,
+    number_in_book: main.numberInBook,
+    book_number: main.bookNumber,
+    chapter_number: main.chapterNumber,
+    book_name: main.bookName,
+    chapter_name: main.chapterName,
+    narrated_by: main.narratedBy,
+    narrated_by_detail: main.narratedByDetail,
+    arabic: main.arabic,
   };
 
-  try {
-    const response = await firestore
-      .collection("hadith_buhkari")
-      .doc(advance_numbering)
-      .set(data);
-
-    res.status(200).json({
-      error: false,
-      message: "Saved",
-    });
-  } catch (e) {
-    res.status(200).json({
-      error: true,
-      message: "Failed",
-    });
+  if (main.linkedHadiths) {
+    mainData.linked_hadiths = main.linkedHadiths;
   }
-});
 
-app.post("/translation", async (req, res) => {
-  const englishId = req.body.englishId; // language.adavance_numbering
-  const urduId = req.body.urduId; // language.adavance_numbering
+  if (main.linkedAyahs) {
+    mainData.linked_ayahs = main.linkedAyahs;
+  }
+
+  if (main.relatedHadiths) {
+    mainData.related_hadiths = main.relatedHadiths;
+  }
+
+  if (main.tags) {
+    mainData.tags = main.tags;
+  }
+
+  const englishId = "en." + advance_numbering; // language.adavance_numbering
+  const urduId = "ur." + advance_numbering; // language.adavance_numbering
   const english = req.body.english;
   const urdu = req.body.urdu;
+
   const englishData = {
     book_name: english.bookName,
     chapter_name: english.chapterName,
@@ -73,7 +105,18 @@ app.post("/translation", async (req, res) => {
   const backResponse = {};
 
   try {
-    const enResponse = await firestore
+    await firestore
+      .collection("hadith_bukhari")
+      .doc(advance_numbering)
+      .set(mainData);
+
+    backResponse.main_error = false;
+  } catch (e) {
+    backResponse.main_error = true;
+  }
+
+  try {
+    await firestore
       .collection("hadith_bukhari_translations")
       .doc(englishId)
       .set(englishData);
@@ -83,7 +126,7 @@ app.post("/translation", async (req, res) => {
   }
 
   try {
-    const urResponse = await firestore
+    await firestore
       .collection("hadith_bukhari_translations")
       .doc(urduId)
       .set(urduData);
