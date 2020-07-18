@@ -1,16 +1,25 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const morgan = require("morgan");
+//const morgan = require("morgan");
 
 const { Firestore } = require("@google-cloud/firestore");
 const firestore = new Firestore();
 
 const app = express();
 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.set("case sensitive routing", true);
 app.use(bodyParser.json());
 
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 
 app.post("/test", (req, res) => {
   const backResponse = {};
@@ -27,16 +36,19 @@ app.post("/test", (req, res) => {
 //     numberInBook: 12,
 //     bookNumber: 1,
 //     chapterNumber: 2,
-//     bookName: "name arabic",
-//     chapterName: "chapter name arabic",
-//     narratedBy: "narrated by arabic",
-//     narratedByDetail: "narrated by detail",
-//     arabic: "arabic text",
 //     linkedHadiths: ['hadith-1', 'hadith-2'] // optional
 //     linkedAyahs: ['ayah-1', 'ayah-2'] // optional
 //     relatedHadiths: ['hadith-1', 'hadith-2'] // optional
 //     tags: ['tag-1', 'tag-2'] // optional
 //   },
+
+//  arabic: {
+//   bookName: "name arabic",
+//       chapterName: "chapter name arabic",
+//       narratedBy: "narrated by arabic",
+//       narratedByDetail: "narrated by detail",
+//       arabic: "arabic text",
+//  }
 //   english: {
 //     bookName: "book name",
 //     chapterName: "chapter name",
@@ -60,11 +72,6 @@ app.post("/hadith", async (req, res) => {
     number_in_book: main.numberInBook,
     book_number: main.bookNumber,
     chapter_number: main.chapterNumber,
-    book_name: main.bookName,
-    chapter_name: main.chapterName,
-    narrated_by: main.narratedBy,
-    narrated_by_detail: main.narratedByDetail,
-    arabic: main.arabic,
   };
 
   if (main.linkedHadiths) {
@@ -83,10 +90,20 @@ app.post("/hadith", async (req, res) => {
     mainData.tags = main.tags;
   }
 
+  const arabicId = "ar." + advance_numbering; // language.adavance_numbering
   const englishId = "en." + advance_numbering; // language.adavance_numbering
   const urduId = "ur." + advance_numbering; // language.adavance_numbering
+  const arabic = req.body.arabic;
   const english = req.body.english;
   const urdu = req.body.urdu;
+
+  const arabicData = {
+    book_name: arabic.bookName,
+    chapter_name: arabic.chapterName,
+    narrated_by: arabic.narratedBy,
+    narrated_by_detail: arabic.narratedByDetail,
+    arabic: arabic.text,
+  };
 
   const englishData = {
     book_name: english.bookName,
@@ -98,7 +115,6 @@ app.post("/hadith", async (req, res) => {
     book_name: urdu.bookName,
     chapter_name: urdu.chapterName,
     narrated_by: urdu.narratedBy,
-    narrated_by_detail: urdu.narratedByDetail,
     text: urdu.text,
   };
 
@@ -112,7 +128,18 @@ app.post("/hadith", async (req, res) => {
 
     backResponse.main_error = false;
   } catch (e) {
+    console.log(e);
     backResponse.main_error = true;
+  }
+
+  try {
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc(arabicId)
+      .set(arabicData);
+    backResponse.ar_error = false;
+  } catch (e) {
+    backResponse.ar_error = true;
   }
 
   try {
@@ -132,6 +159,7 @@ app.post("/hadith", async (req, res) => {
       .set(urduData);
     backResponse.ur_error = false;
   } catch (e) {
+    console.log(e);
     backResponse.ur_error = true;
   }
 
@@ -139,7 +167,7 @@ app.post("/hadith", async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log("Press Ctrl+C to quit.");
