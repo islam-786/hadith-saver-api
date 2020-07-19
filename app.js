@@ -98,22 +98,22 @@ app.post("/hadith", async (req, res) => {
   const urdu = req.body.urdu;
 
   const arabicData = {
-    book_name: arabic.bookName,
-    chapter_name: arabic.chapterName,
+    book_number: "ar." + main.bookNumber,
+    chapter_number: "ar." + main.chapterNumber,
     narrated_by: arabic.narratedBy,
     narrated_by_detail: arabic.narratedByDetail,
     arabic: arabic.text,
   };
 
   const englishData = {
-    book_name: english.bookName,
-    chapter_name: english.chapterName,
+    book_number: "en." + main.bookNumber,
+    chapter_number: "en." + main.chapterNumber,
     narrated_by: english.narratedBy,
     text: english.text,
   };
   const urduData = {
-    book_name: urdu.bookName,
-    chapter_name: urdu.chapterName,
+    book_number: "ur." + main.bookNumber,
+    chapter_number: "ur." + main.chapterNumber,
     narrated_by: urdu.narratedBy,
     text: urdu.text,
   };
