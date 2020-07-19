@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 //const morgan = require("morgan");
-const cors = require('cors')
+const cors = require("cors");
 
 const { Firestore } = require("@google-cloud/firestore");
 const firestore = new Firestore();
@@ -17,7 +17,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(cors());
+// app.use(cors());
 
 app.set("case sensitive routing", true);
 app.use(bodyParser.json());
@@ -122,26 +122,26 @@ app.post("/hadith", async (req, res) => {
   };
 
   const arabicChapter = {
-    chapter_name = arabic.chapterName
-  }
+    chapter_name: arabic.chapterName,
+  };
   const englishChapter = {
-    chapter_name = english.chapterName
-  }
+    chapter_name: english.chapterName,
+  };
   const urduChapter = {
-    chapter_name = urdu.chapterName
-  }
+    chapter_name: urdu.chapterName,
+  };
 
   const arabicBookName = {
-    book_name = "ar."+arabic.bookName
-  }
+    book_name: "ar." + arabic.bookName,
+  };
 
   const englishBookName = {
-    book_name = "en."+english.bookName
-  }
+    book_name: "en." + english.bookName,
+  };
 
   const urduBookName = {
-    book_name = "ur."+urdu.bookName
-  }
+    book_name: "ur." + urdu.bookName,
+  };
 
   const backResponse = {};
 
@@ -191,15 +191,15 @@ app.post("/hadith", async (req, res) => {
   try {
     await firestore
       .collection("hadith_bukhari_chapters")
-      .doc("ar."+main.chapterNumber)
+      .doc("ar." + main.chapterNumber)
       .set(arabicChapter);
-      await firestore
+    await firestore
       .collection("hadith_bukhari_chapters")
-      .doc("en."+main.chapterNumber)
+      .doc("en." + main.chapterNumber)
       .set(englishChapter);
-      await firestore
+    await firestore
       .collection("hadith_bukhari_chapters")
-      .doc("ur."+main.chapterNumber)
+      .doc("ur." + main.chapterNumber)
       .set(urduChapter);
     backResponse.chapter_error = false;
   } catch (e) {
@@ -210,15 +210,15 @@ app.post("/hadith", async (req, res) => {
   try {
     await firestore
       .collection("hadith_bukhari_books")
-      .doc("ar."+main.bookNumber)
+      .doc("ar." + main.bookNumber)
       .set(arabicBookName);
-      await firestore
+    await firestore
       .collection("hadith_bukhari_books")
-      .doc("en."+main.bookNumber)
+      .doc("en." + main.bookNumber)
       .set(englishBookName);
-      await firestore
+    await firestore
       .collection("hadith_bukhari_books")
-      .doc("ur."+main.bookNumber)
+      .doc("ur." + main.bookNumber)
       .set(urduBookName);
     backResponse.book_error = false;
   } catch (e) {
