@@ -129,15 +129,15 @@ app.post("/hadith", async (req, res) => {
   }
 
   const arabicBookName = {
-    book_name = "ar."+main.bookName
+    book_name = "ar."+arabic.bookName
   }
 
   const englishBookName = {
-    book_name = "en."+main.bookName
+    book_name = "en."+english.bookName
   }
 
   const urduBookName = {
-    book_name = "ur."+main.bookName
+    book_name = "ur."+urdu.bookName
   }
 
   const backResponse = {};
