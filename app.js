@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 //const morgan = require("morgan");
+const cors = require('cors')
 
 const { Firestore } = require("@google-cloud/firestore");
 const firestore = new Firestore();
@@ -15,6 +16,8 @@ app.use(function (req, res, next) {
   );
   next();
 });
+
+app.use(cors());
 
 app.set("case sensitive routing", true);
 app.use(bodyParser.json());
