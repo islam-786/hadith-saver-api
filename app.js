@@ -174,7 +174,7 @@ app.post("/hadith", async (req, res) => {
     chapter_number: "ar." + main.chapterNumber,
     narrated_by: arabic.narratedBy,
     narrated_by_detail: arabic.narratedByDetail,
-    arabic: arabic.text,
+    text: arabic.text,
   };
 
   const englishData = {
