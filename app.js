@@ -67,6 +67,75 @@ app.post("/test", (req, res) => {
 //   }
 // }
 
+app.post("/chapter", async (req, res) => {
+  const chapter_number = req.body.chapter_number;
+  const book_number = req.body.book_number;
+
+  const arabicChapter = {
+    chapter_name: req.body.arabic.chapterName,
+  };
+  const englishChapter = {
+    chapter_name: req.body.english.chapterName,
+  };
+  const urduChapter = {
+    chapter_name: req.body.urdu.chapterName,
+  };
+
+  const arabicBookName = {
+    book_name: req.body.arabic.bookName,
+  };
+
+  const englishBookName = {
+    book_name: req.body.english.bookName,
+  };
+
+  const urduBookName = {
+    book_name: req.body.urdu.bookName,
+  };
+
+  const backResponse = {};
+
+  try {
+    await firestore
+      .collection("hadith_bukhari_chapters")
+      .doc("ar." + chapter_number)
+      .set(arabicChapter);
+    await firestore
+      .collection("hadith_bukhari_chapters")
+      .doc("en." + chapter_number)
+      .set(englishChapter);
+    await firestore
+      .collection("hadith_bukhari_chapters")
+      .doc("ur." + chapter_number)
+      .set(urduChapter);
+    backResponse.chapter_error = false;
+  } catch (e) {
+    console.log(e);
+    backResponse.chapter_error = true;
+  }
+
+  try {
+    await firestore
+      .collection("hadith_bukhari_books")
+      .doc("ar." + book_number)
+      .set(arabicBookName);
+    await firestore
+      .collection("hadith_bukhari_books")
+      .doc("en." + book_number)
+      .set(englishBookName);
+    await firestore
+      .collection("hadith_bukhari_books")
+      .doc("ur." + book_number)
+      .set(urduBookName);
+    backResponse.book_error = false;
+  } catch (e) {
+    console.log(e);
+    backResponse.book_error = true;
+  }
+
+  res.status(200).json(backResponse);
+});
+
 app.post("/hadith", async (req, res) => {
   const advance_numbering = req.body.advanceNumbering;
   const main = req.body.main;
@@ -121,28 +190,6 @@ app.post("/hadith", async (req, res) => {
     text: urdu.text,
   };
 
-  const arabicChapter = {
-    chapter_name: arabic.chapterName,
-  };
-  const englishChapter = {
-    chapter_name: english.chapterName,
-  };
-  const urduChapter = {
-    chapter_name: urdu.chapterName,
-  };
-
-  const arabicBookName = {
-    book_name: "ar." + arabic.bookName,
-  };
-
-  const englishBookName = {
-    book_name: "en." + english.bookName,
-  };
-
-  const urduBookName = {
-    book_name: "ur." + urdu.bookName,
-  };
-
   const backResponse = {};
 
   try {
@@ -186,44 +233,6 @@ app.post("/hadith", async (req, res) => {
   } catch (e) {
     console.log(e);
     backResponse.ur_error = true;
-  }
-
-  try {
-    await firestore
-      .collection("hadith_bukhari_chapters")
-      .doc("ar." + main.chapterNumber)
-      .set(arabicChapter);
-    await firestore
-      .collection("hadith_bukhari_chapters")
-      .doc("en." + main.chapterNumber)
-      .set(englishChapter);
-    await firestore
-      .collection("hadith_bukhari_chapters")
-      .doc("ur." + main.chapterNumber)
-      .set(urduChapter);
-    backResponse.chapter_error = false;
-  } catch (e) {
-    console.log(e);
-    backResponse.chapter_error = true;
-  }
-
-  try {
-    await firestore
-      .collection("hadith_bukhari_books")
-      .doc("ar." + main.bookNumber)
-      .set(arabicBookName);
-    await firestore
-      .collection("hadith_bukhari_books")
-      .doc("en." + main.bookNumber)
-      .set(englishBookName);
-    await firestore
-      .collection("hadith_bukhari_books")
-      .doc("ur." + main.bookNumber)
-      .set(urduBookName);
-    backResponse.book_error = false;
-  } catch (e) {
-    console.log(e);
-    backResponse.book_error = true;
   }
 
   res.status(200).json(backResponse);
