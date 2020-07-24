@@ -68,29 +68,29 @@ app.post("/test", (req, res) => {
 // }
 
 app.post("/chapter", async (req, res) => {
-  const chapter_number = req.body.chapter_number;
-  const book_number = req.body.book_number;
+  const chapter_number = req.body.chapter_number.trim();
+  const book_number = req.body.book_number.trim();
 
   const arabicChapter = {
-    chapter_name: req.body.arabic.chapterName,
+    chapter_name: req.body.arabic.chapterName.trim(),
   };
   const englishChapter = {
-    chapter_name: req.body.english.chapterName,
+    chapter_name: req.body.english.chapterName.trim(),
   };
   const urduChapter = {
-    chapter_name: req.body.urdu.chapterName,
+    chapter_name: req.body.urdu.chapterName.trim(),
   };
 
   const arabicBookName = {
-    book_name: req.body.arabic.bookName,
+    book_name: req.body.arabic.bookName.trim(),
   };
 
   const englishBookName = {
-    book_name: req.body.english.bookName,
+    book_name: req.body.english.bookName.trim(),
   };
 
   const urduBookName = {
-    book_name: req.body.urdu.bookName,
+    book_name: req.body.urdu.bookName.trim(),
   };
 
   const backResponse = {};
@@ -137,29 +137,29 @@ app.post("/chapter", async (req, res) => {
 });
 
 app.post("/hadith", async (req, res) => {
-  const advance_numbering = req.body.advanceNumbering;
+  const advance_numbering = req.body.advanceNumbering.trim();
   const main = req.body.main;
   const mainData = {
-    international_numbering: main.internationalNumbering,
-    number_in_book: main.numberInBook,
-    book_number: main.bookNumber,
-    chapter_number: main.chapterNumber,
+    international_numbering: main.internationalNumbering.trim(),
+    number_in_book: main.numberInBook.trim(),
+    book_number: main.bookNumber.trim(),
+    chapter_number: main.chapterNumber.trim(),
   };
 
   if (main.linkedHadiths) {
-    mainData.linked_hadiths = main.linkedHadiths;
+    mainData.linked_hadiths = main.linkedHadiths.split(",");
   }
 
   if (main.linkedAyahs) {
-    mainData.linked_ayahs = main.linkedAyahs;
+    mainData.linked_ayahs = main.linkedAyahs.split(",");
   }
 
   if (main.relatedHadiths) {
-    mainData.related_hadiths = main.relatedHadiths;
+    mainData.related_hadiths = main.relatedHadiths.split(",");
   }
 
   if (main.tags) {
-    mainData.tags = main.tags;
+    mainData.tags = main.tags.split(",");
   }
 
   const arabicId = "ar." + advance_numbering; // language.adavance_numbering
@@ -170,24 +170,24 @@ app.post("/hadith", async (req, res) => {
   const urdu = req.body.urdu;
 
   const arabicData = {
-    book_number: "ar." + main.bookNumber,
-    chapter_number: "ar." + main.chapterNumber,
-    narrated_by: arabic.narratedBy,
-    narrated_by_detail: arabic.narratedByDetail,
-    text: arabic.text,
+    book_number: "ar." + main.bookNumber.trim(),
+    chapter_number: "ar." + main.chapterNumber.trim(),
+    narrated_by: arabic.narratedBy.trim(),
+    narrated_by_detail: arabic.narratedByDetail.trim(),
+    text: arabic.text.trim(),
   };
 
   const englishData = {
-    book_number: "en." + main.bookNumber,
-    chapter_number: "en." + main.chapterNumber,
-    narrated_by: english.narratedBy,
-    text: english.text,
+    book_number: "en." + main.bookNumber.trim(),
+    chapter_number: "en." + main.chapterNumber.trim(),
+    narrated_by: english.narratedBy.trim(),
+    text: english.text.trim(),
   };
   const urduData = {
-    book_number: "ur." + main.bookNumber,
-    chapter_number: "ur." + main.chapterNumber,
-    narrated_by: urdu.narratedBy,
-    text: urdu.text,
+    book_number: "ur." + main.bookNumber.trim(),
+    chapter_number: "ur." + main.chapterNumber.trim(),
+    narrated_by: urdu.narratedBy.trim(),
+    text: urdu.text.trim(),
   };
 
   const backResponse = {};
