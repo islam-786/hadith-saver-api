@@ -258,6 +258,133 @@ app.post("/hadith", async (req, res) => {
   }
 });
 
+// DUPLICATE HADITH
+app.get("/duplicate/:number", async (req, res, next) => {
+  try {
+    const query = await firestore
+      .collection("hadith_bukhari")
+      .where("international_numbering", "==", req.params.id)
+      .limit(1)
+      .get();
+
+    let hadith;
+
+    query.forEach((snap) => {
+      hadith = snap.data();
+      hadith.id = snap.id;
+    });
+
+    const urduHadithSnap = await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ur." + hadith.id)
+      .get();
+
+    const urduHadith = urduHadithSnap.data();
+
+    res.status(200).json({
+      advance_number: hadith.id,
+      international_number: hadith.international_numbering,
+      urdu_text: urduHadith.text,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(200).json({
+      error: e.message,
+    });
+  }
+});
+
+app.post("/duplicate-save", async (req, res, next) => {
+  try {
+    // Get old hadith
+    // Add new hadith with new advance number
+    // delete previous hadith
+    // add new hadith translations
+    // delete old hadith translation
+    const oldHadithSnap = await firestore
+      .collection("hadith_bukhari")
+      .doc(req.body.old_advance_number)
+      .get();
+
+    const oldHadith = oldHadithSnap.data();
+
+    await firestore
+      .collection("hadith_buhkari")
+      .doc(req.body.new_advance_number)
+      .set({
+        ...oldHadith,
+        linked_hadiths: req.body.linkedHadiths.split(","),
+      });
+
+    await firestore
+      .collection("hadith_bukhari")
+      .doc(req.body.old_advance_number)
+      .delete();
+
+    const arSnap = await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ar." + req.body.old_advance_number)
+      .get();
+
+    const arHadith = arSnap.data();
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ar." + req.body.new_advance_number)
+      .set(arHadith);
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ar." + req.body.old_advance_number)
+      .delete();
+
+    // FOR URDU
+    const urSnap = await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ur." + req.body.old_advance_number)
+      .get();
+
+    const urHadith = urSnap.data();
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ur." + req.body.new_advance_number)
+      .set(urHadith);
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("ur." + req.body.old_advance_number)
+      .delete();
+
+    // FOR ENGLISH
+    const enSnap = await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("en." + req.body.old_advance_number)
+      .get();
+
+    const enHadith = enSnap.data();
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("en." + req.body.new_advance_number)
+      .set(enHadith);
+
+    await firestore
+      .collection("hadith_bukhari_translations")
+      .doc("en." + req.body.old_advance_number)
+      .delete();
+
+    res.status(200).json({
+      message: "ok",
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(200).json({
+      error: e.message,
+    });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
