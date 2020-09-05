@@ -375,12 +375,12 @@ app.post("/duplicate-save", async (req, res, next) => {
       .delete();
 
     res.status(200).json({
-      message: "ok",
+      message: "Saved hadith " + req.body.old_advance_number,
     });
   } catch (e) {
     console.log(e);
     res.status(200).json({
-      error: e.message,
+      message: e.message,
     });
   }
 });
