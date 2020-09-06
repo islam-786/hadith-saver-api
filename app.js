@@ -263,12 +263,11 @@ app.get("/duplicate/:number", async (req, res, next) => {
   try {
     const query = await firestore
       .collection("hadith_bukhari")
-      .where("international_numbering", "==", req.params.id)
+      .where("international_numbering", "==", req.params.number)
       .limit(1)
       .get();
 
     let hadith;
-
     query.forEach((snap) => {
       hadith = snap.data();
       hadith.id = snap.id;
