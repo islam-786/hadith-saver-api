@@ -295,11 +295,6 @@ app.get("/duplicate/:number", async (req, res, next) => {
 
 app.post("/duplicate-save", async (req, res, next) => {
   try {
-    // Get old hadith
-    // Add new hadith with new advance number
-    // delete previous hadith
-    // add new hadith translations
-    // delete old hadith translation
     const oldHadithSnap = await firestore
       .collection("hadith_bukhari")
       .doc(req.body.old_advance_number)
@@ -308,7 +303,7 @@ app.post("/duplicate-save", async (req, res, next) => {
     const oldHadith = oldHadithSnap.data();
 
     await firestore
-      .collection("hadith_buhkari")
+      .collection("hadith_bukhari")
       .doc(req.body.new_advance_number)
       .set({
         ...oldHadith,
